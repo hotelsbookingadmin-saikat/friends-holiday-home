@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Room Details | Puri Homestay</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+</head>
+
+<body>
+
+<header class="site-header">
+
+    <div class="container header-inner">
+
+        <a
+            href="index.html"
+            class="brand"
+        >
+            <span class="brand-icon">🏡</span>
+
+            <span id="headerPropertyName">
+                Puri Homestay
+            </span>
+        </a>
+
+        <nav class="main-nav">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="index.html#rooms">
+                Rooms
+            </a>
+
+            <a href="index.html#amenities">
+                Amenities
+            </a>
+
+            <a href="index.html#location">
+                Location
+            </a>
+
+        </nav>
+
+        <a
+            href="index.html"
+            class="admin-button"
+        >
+            ← Back
+        </a>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <!-- ROOM DETAILS -->
+
+    <section class="room-details-section">
+
+        <div class="container">
+
+            <div
+                id="roomLoading"
+                class="loading-state"
+            >
+                Loading room details...
+            </div>
+
+
+            <div
+                id="roomError"
+                class="page-error"
+                hidden
+            >
+                <h2>
+                    Room Not Found
+                </h2>
+
+                <p>
+                    We couldn't find the requested room.
+                </p>
+
+                <a
+                    href="index.html#rooms"
+                    class="primary-button"
+                >
+                    View All Rooms
+                </a>
+            </div>
+
+
+            <div
+                id="roomDetails"
+                hidden
+            >
+
+                <!-- Breadcrumb -->
+
+                <div class="room-breadcrumb">
+
+                    <a href="index.html#rooms">
+                        ← Back to Rooms
+                    </a>
+
+                </div>
+
+
+                <!-- Main Room Layout -->
+
+                <div class="room-details-grid">
+
+
+                    <!-- LEFT : IMAGE GALLERY -->
+
+                    <div class="room-gallery">
+
+                        <div class="room-main-image-wrapper">
+
+                            <img
+                                id="roomMainImage"
+                                class="room-main-image"
+                                src=""
+                                alt="Room"
+                            >
+
+                            <div
+                                id="roomMainPlaceholder"
+                                class="room-image-placeholder"
+                                hidden
+                            >
+                                🏡
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="roomThumbnails"
+                            class="room-thumbnails"
+                        >
+                        </div>
+
+                    </div>
+
+
+                    <!-- RIGHT : ROOM INFORMATION -->
+
+                    <div class="room-details-content">
+
+                        <div
+                            id="roomType"
+                            class="room-details-type"
+                        >
+                        </div>
+
+
+                        <h1
+                            id="roomName"
+                            class="room-details-name"
+                        >
+                        </h1>
+
+
+                        <div
+                            id="roomNumber"
+                            class="room-details-number"
+                        >
+                        </div>
+
+
+                        <div
+                            id="roomPrice"
+                            class="room-details-price"
+                        >
+                        </div>
+
+
+                        <div
+                            id="roomStatus"
+                            class="room-details-status"
+                        >
+                        </div>
+
+
+                        <!-- Room Quick Information -->
+
+                        <div class="room-info-grid">
+
+                            <div class="room-info-item">
+
+                                <span class="room-info-icon">
+                                    👨‍👩‍👧
+                                </span>
+
+                                <div>
+
+                                    <span class="room-info-label">
+                                        Guests
+                                    </span>
+
+                                    <strong id="roomGuests">
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="room-info-item">
+
+                                <span class="room-info-icon">
+                                    🛏️
+                                </span>
+
+                                <div>
+
+                                    <span class="room-info-label">
+                                        Bed
+                                    </span>
+
+                                    <strong id="roomBed">
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="room-info-item">
+
+                                <span class="room-info-icon">
+                                    🏢
+                                </span>
+
+                                <div>
+
+                                    <span class="room-info-label">
+                                        Floor
+                                    </span>
+
+                                    <strong id="roomFloor">
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="room-info-item">
+
+                                <span class="room-info-icon">
+                                    🚪
+                                </span>
+
+                                <div>
+
+                                    <span class="room-info-label">
+                                        Room No.
+                                    </span>
+
+                                    <strong id="roomNo">
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Cooking -->
+
+                        <div
+                            id="roomCooking"
+                            class="room-details-feature"
+                            hidden
+                        >
+
+                            <div class="room-feature-icon">
+                                🍳
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Self-Cooking Facility
+                                </h3>
+
+                                <p id="roomKitchenInfo">
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Description -->
+
+                        <div class="room-details-block">
+
+                            <h2>
+                                About This Room
+                            </h2>
+
+                            <p id="roomDescription">
+                            </p>
+
+                        </div>
+
+
+                        <!-- Amenities -->
+
+                        <div
+                            id="roomAmenitiesBlock"
+                            class="room-details-block"
+                            hidden
+                        >
+
+                            <h2>
+                                Room Amenities
+                            </h2>
+
+                            <div
+                                id="roomAmenities"
+                                class="room-amenities-list"
+                            >
+                            </div>
+
+                        </div>
+
+
+                        <!-- Enquiry -->
+
+                        <div class="room-enquiry-box">
+
+                            <h2>
+                                Interested in this room?
+                            </h2>
+
+                            <p>
+                                Contact us on WhatsApp for
+                                availability and booking enquiry.
+                            </p>
+
+                            <a
+                                id="whatsappButton"
+                                class="whatsapp-button"
+                                href="#"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span>💬</span>
+                                Enquire on WhatsApp
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div>
+
+            <div
+                id="footerPropertyName"
+                class="footer-brand"
+            >
+                Puri Homestay
+            </div>
+
+            <p>
+                A comfortable home for your Puri stay.
+            </p>
+
+        </div>
+
+        <div class="footer-copy">
+
+            ©
+            <span id="currentYear"></span>
+
+            All rights reserved.
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script src="js/config.js"></script>
+<script src="js/sheets.js"></script>
+<script src="js/room.js"></script>
+
+</body>
+</html>

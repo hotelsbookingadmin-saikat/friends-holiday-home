@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Puri Homestay Admin Dashboard"
+    >
+
+    <title>
+        Puri Homestay | Admin Dashboard
+    </title>
+
+    <link
+        href="css/style.css"
+        rel="stylesheet"
+    >
+
+</head>
+
+
+<body>
+
+<main class="admin-page">
+
+
+    <!-- ========================================================
+         ADMIN LOGIN
+    ========================================================= -->
+
+    <section
+        class="admin-login-section"
+        id="adminLogin"
+    >
+
+        <div class="admin-login-card">
+
+
+            <!-- LOGIN HEADER -->
+
+            <div class="admin-login-header">
+
+                <div class="admin-login-icon">
+                    🏡
+                </div>
+
+                <div>
+
+                    <p class="admin-kicker">
+                        PURI HOMESTAY
+                    </p>
+
+                    <h1>
+                        Admin Login
+                    </h1>
+
+                    <p>
+                        Sign in to manage your homestay.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOGIN MESSAGE -->
+
+            <div
+                aria-live="polite"
+                class="admin-message"
+                id="loginMessage"
+            ></div>
+
+
+            <!-- LOGIN FORM -->
+
+            <form
+                class="admin-form"
+                id="loginForm"
+            >
+
+                <div class="form-group">
+
+                    <label for="loginUsername">
+                        Username
+                    </label>
+
+                    <input
+                        autocomplete="username"
+                        id="loginUsername"
+                        name="username"
+                        placeholder="Enter username"
+                        required
+                        type="text"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="loginPassword">
+                        Password
+                    </label>
+
+                    <input
+                        autocomplete="current-password"
+                        id="loginPassword"
+                        name="password"
+                        placeholder="Enter password"
+                        required
+                        type="password"
+                    >
+
+                </div>
+
+
+                <button
+                    class="primary-button admin-login-button"
+                    id="loginButton"
+                    type="submit"
+                >
+                    Login
+                </button>
+
+            </form>
+
+
+            <div class="admin-login-footer">
+
+                <a href="index.html">
+                    ← Back to website
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================================
+         ADMIN DASHBOARD
+    ========================================================= -->
+
+    <section
+        class="admin-dashboard-shell"
+        id="adminPanel"
+        hidden
+    >
+
+
+        <!-- ====================================================
+             SIDEBAR
+        ===================================================== -->
+
+        <aside class="admin-sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="admin-sidebar-brand">
+
+                <div class="admin-sidebar-logo">
+                    🏡
+                </div>
+
+                <div>
+
+                    <strong>
+                        Puri Homestay
+                    </strong>
+
+                    <span>
+                        Admin Panel
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="admin-sidebar-nav">
+
+                <button
+                    type="button"
+                    class="admin-nav-item active"
+                    data-admin-nav="dashboard"
+                >
+
+                    <span class="admin-nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="admin-nav-item"
+                    data-admin-nav="rooms"
+                >
+
+                    <span class="admin-nav-icon">
+                        🛏
+                    </span>
+
+                    <span>
+                        Rooms
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="admin-nav-item"
+                    data-admin-nav="homestay"
+                >
+
+                    <span class="admin-nav-icon">
+                        🏡
+                    </span>
+
+                    <span>
+                        Homestay
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="admin-nav-item"
+                    data-admin-nav="amenities"
+                >
+
+                    <span class="admin-nav-icon">
+                        ✨
+                    </span>
+
+                    <span>
+                        Amenities
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="admin-nav-item"
+                    data-admin-nav="offices"
+                >
+
+                    <span class="admin-nav-icon">
+                        📍
+                    </span>
+
+                    <span>
+                        Booking Offices
+                    </span>
+
+                </button>
+
+            </nav>
+
+
+            <!-- SIDEBAR BOTTOM -->
+
+            <div class="admin-sidebar-footer">
+
+                <a
+                    href="index.html"
+                    class="admin-sidebar-action"
+                >
+
+                    <span>
+                        🌐
+                    </span>
+
+                    <span>
+                        View Website
+                    </span>
+
+                </a>
+
+
+                <button
+                    type="button"
+                    class="admin-sidebar-action"
+                    id="logoutButton"
+                >
+
+                    <span>
+                        ↪
+                    </span>
+
+                    <span>
+                        Logout
+                    </span>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- ====================================================
+             MAIN DASHBOARD AREA
+        ===================================================== -->
+
+        <div class="admin-dashboard-main">
+
+
+            <!-- MOBILE TOP BAR -->
+
+            <header class="admin-mobile-header">
+
+                <button
+                    type="button"
+                    class="admin-mobile-menu-button"
+                    id="adminMobileMenuButton"
+                    aria-label="Open admin menu"
+                >
+                    ☰
+                </button>
+
+
+                <div>
+
+                    <strong>
+                        Puri Homestay
+                    </strong>
+
+                    <span>
+                        Admin
+                    </span>
+
+                </div>
+
+            </header>
+
+
+            <!-- DASHBOARD HEADER -->
+
+            <header class="admin-main-header">
+
+                <div>
+
+                    <p class="admin-kicker">
+                        PURI HOMESTAY
+                    </p>
+
+                    <h1>
+                        Dashboard
+                    </h1>
+
+                    <p id="adminUserInfo">
+                        Welcome, Admin
+                    </p>
+
+                </div>
+
+
+                <div class="admin-main-header-actions">
+
+                    <a
+                        href="index.html"
+                        class="secondary-button"
+                    >
+                        View Website
+                    </a>
+
+                </div>
+
+            </header>
+
+
+            <!-- DASHBOARD MESSAGE -->
+
+            <div
+                aria-live="polite"
+                class="admin-message"
+                id="dashboardMessage"
+            ></div>
+
+
+            <!-- =================================================
+                 MANAGEMENT CARDS
+            ================================================== -->
+
+            <section class="admin-dashboard-section">
+
+
+                <div class="admin-section-heading">
+
+                    <div>
+
+                        <p class="admin-kicker">
+                            MANAGEMENT
+                        </p>
+
+                        <h2>
+                            Your Homestay Data
+                        </h2>
+
+                        <p>
+                            Select a section to manage its records.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-management-grid">
+
+
+                    <!-- ROOMS -->
+
+                    <button
+                        type="button"
+                        class="admin-management-card admin-card-rooms"
+                        data-admin-module="rooms"
+                    >
+
+                        <span class="admin-management-icon">
+                            🛏
+                        </span>
+
+                        <span class="admin-management-content">
+
+                            <span class="admin-management-title">
+                                Rooms
+                            </span>
+
+                            <span
+                                class="admin-management-count"
+                                id="roomsCount"
+                            >
+                                —
+                            </span>
+
+                            <span class="admin-management-description">
+                                Manage rooms, pricing, availability
+                                and room information.
+                            </span>
+
+                        </span>
+
+                        <span class="admin-management-action">
+                            Manage →
+                        </span>
+
+                    </button>
+
+
+                    <!-- HOMESTAY -->
+
+                    <button
+                        type="button"
+                        class="admin-management-card admin-card-homestay"
+                        data-admin-module="homestay"
+                    >
+
+                        <span class="admin-management-icon">
+                            🏡
+                        </span>
+
+                        <span class="admin-management-content">
+
+                            <span class="admin-management-title">
+                                Homestay
+                            </span>
+
+                            <span
+                                class="admin-management-count"
+                                id="homestayCount"
+                            >
+                                —
+                            </span>
+
+                            <span class="admin-management-description">
+                                Manage property information
+                                and configuration.
+                            </span>
+
+                        </span>
+
+                        <span class="admin-management-action">
+                            Manage →
+                        </span>
+
+                    </button>
+
+
+                    <!-- AMENITIES -->
+
+                    <button
+                        type="button"
+                        class="admin-management-card admin-card-amenities"
+                        data-admin-module="amenities"
+                    >
+
+                        <span class="admin-management-icon">
+                            ✨
+                        </span>
+
+                        <span class="admin-management-content">
+
+                            <span class="admin-management-title">
+                                Amenities
+                            </span>
+
+                            <span
+                                class="admin-management-count"
+                                id="amenitiesCount"
+                            >
+                                —
+                            </span>
+
+                            <span class="admin-management-description">
+                                Manage amenities shown across
+                                the homestay website.
+                            </span>
+
+                        </span>
+
+                        <span class="admin-management-action">
+                            Manage →
+                        </span>
+
+                    </button>
+
+
+                    <!-- BOOKING OFFICES -->
+
+                    <button
+                        type="button"
+                        class="admin-management-card admin-card-offices"
+                        data-admin-module="offices"
+                    >
+
+                        <span class="admin-management-icon">
+                            📍
+                        </span>
+
+                        <span class="admin-management-content">
+
+                            <span class="admin-management-title">
+                                Booking Offices
+                            </span>
+
+                            <span
+                                class="admin-management-count"
+                                id="officesCount"
+                            >
+                                —
+                            </span>
+
+                            <span class="admin-management-description">
+                                Manage booking office locations,
+                                contacts and addresses.
+                            </span>
+
+                        </span>
+
+                        <span class="admin-management-action">
+                            Manage →
+                        </span>
+
+                    </button>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 DASHBOARD INFORMATION
+            ================================================== -->
+
+            <section class="admin-dashboard-info">
+
+                <div class="admin-dashboard-info-card">
+
+                    <span class="admin-info-icon">
+                        ℹ
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Admin Panel
+                        </strong>
+
+                        <p>
+                            Choose a section above to manage
+                            your homestay information.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+    </section>
+
+    <!-- ============================================================
+     GENERIC CRUD MODAL
+     STEP 2
+============================================================= -->
+
+<div
+    class="admin-crud-modal"
+    id="adminCrudModal"
+    aria-hidden="true"
+>
+
+    <!-- ========================================================
+         MODAL BACKDROP
+    ========================================================= -->
+
+    <div
+        class="admin-crud-modal-backdrop"
+        id="adminCrudModalBackdrop"
+    ></div>
+
+
+    <!-- ========================================================
+         MODAL WINDOW
+    ========================================================= -->
+
+    <section
+        class="admin-crud-modal-window"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="adminCrudModalTitle"
+    >
+
+
+        <!-- ====================================================
+             MODAL HEADER
+        ===================================================== -->
+
+        <header class="admin-crud-modal-header">
+
+            <div>
+
+                <p
+                    class="admin-kicker"
+                    id="adminCrudModalKicker"
+                >
+                    MANAGEMENT
+                </p>
+
+                <h2 id="adminCrudModalTitle">
+                    Manage Records
+                </h2>
+
+                <p id="adminCrudModalDescription">
+                    Add, edit and manage records.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="admin-crud-modal-close"
+                id="adminCrudModalClose"
+                aria-label="Close modal"
+            >
+                ×
+            </button>
+
+        </header>
+
+
+        <!-- ====================================================
+             MODAL BODY
+        ===================================================== -->
+
+        <div class="admin-crud-modal-body">
+
+
+            <!-- =================================================
+                 FORM SECTION
+            ================================================== -->
+
+            <section
+                class="admin-crud-form-section"
+                id="adminCrudFormSection"
+            >
+
+                <div class="admin-crud-section-heading">
+
+                    <div>
+
+                        <p class="admin-kicker">
+                            FORM
+                        </p>
+
+                        <h3 id="adminCrudFormTitle">
+                            Add New Record
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <!--
+                    This container will receive the
+                    module-specific form in Step 3+.
+                -->
+
+                <div
+                    class="admin-crud-form-container"
+                    id="adminCrudFormContainer"
+                >
+
+                    <div class="admin-crud-placeholder">
+
+                        <span class="admin-crud-placeholder-icon">
+                            +
+                        </span>
+
+                        <strong>
+                            CRUD Form Ready
+                        </strong>
+
+                        <p>
+                            The module-specific form will be
+                            loaded here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="admin-message"
+                    id="adminCrudFormMessage"
+                    aria-live="polite"
+                ></div>
+
+            </section>
+
+
+            <!-- =================================================
+                 TABLE SECTION
+            ================================================== -->
+
+            <section
+                class="admin-crud-table-section"
+                id="adminCrudTableSection"
+            >
+
+                <div class="admin-crud-section-heading">
+
+                    <div>
+
+                        <p class="admin-kicker">
+                            RECORDS
+                        </p>
+
+                        <h3 id="adminCrudTableTitle">
+                            Data List
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TABLE TOOLBAR -->
+
+                <div class="admin-crud-table-toolbar">
+
+                    <div
+                        class="admin-crud-search"
+                    >
+
+                        <input
+                            type="search"
+                            id="adminCrudSearch"
+                            placeholder="Search..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                    <div
+                        class="admin-crud-record-count"
+                        id="adminCrudRecordCount"
+                    >
+                        0 records
+                    </div>
+
+                </div>
+
+
+                <!-- TABLE -->
+
+                <div
+                    class="admin-crud-table-wrapper"
+                    id="adminCrudTableWrapper"
+                >
+
+                    <div class="admin-crud-placeholder">
+
+                        <span class="admin-crud-placeholder-icon">
+                            ☰
+                        </span>
+
+                        <strong>
+                            Data Table Ready
+                        </strong>
+
+                        <p>
+                            The module-specific data table
+                            will be loaded here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+
+        <!-- ====================================================
+             MODAL FOOTER
+        ===================================================== -->
+
+        <footer class="admin-crud-modal-footer">
+
+            <button
+                type="button"
+                class="secondary-button"
+                id="adminCrudModalCancel"
+            >
+                Close
+            </button>
+
+        </footer>
+
+
+    </section>
+
+</div>
+
+</main>
+
+
+<script src="js/config.js"></script>
+
+<script src="js/admin.js"></script>
+
+</body>
+
+</html>
