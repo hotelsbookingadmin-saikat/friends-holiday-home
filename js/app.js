@@ -13,6 +13,8 @@ let homestayData = {};
 
 let amenitiesData = [];
 
+let bookingOfficesData = [];
+
 // ============================================================
 // LOAD ALL DATA
 // ============================================================
@@ -25,12 +27,11 @@ async function loadData() {
     // LOAD DATA FROM GOOGLE SHEETS
     // ----------------------------------------------------
 
-    const [rooms, homestayRows, amenities] = await Promise.all([
+    const [rooms, homestayRows, amenities, bookingOffices] = await Promise.all([
       fetchSheet(CONFIG.sheets.rooms),
-
       fetchSheet(CONFIG.sheets.homestay),
-
       fetchSheet(CONFIG.sheets.amenities),
+      fetchSheet(CONFIG.sheets.bookingOffices),
     ]);
 
     // ----------------------------------------------------
@@ -40,6 +41,8 @@ async function loadData() {
     roomsData = Array.isArray(rooms) ? rooms : [];
 
     amenitiesData = Array.isArray(amenities) ? amenities : [];
+
+    bookingOfficesData = Array.isArray(bookingOffices) ? bookingOffices : [];
 
     homestayData = convertHomestayData(homestayRows);
 
@@ -58,6 +61,8 @@ async function loadData() {
     renderRooms(roomsData);
 
     renderAmenities(amenitiesData);
+
+    renderBookingOffices(bookingOfficesData);
 
     updateCurrentYear();
   } catch (error) {
@@ -785,6 +790,188 @@ function createAmenityCard(amenity) {
     `;
 }
 
+/* ============================================================
+   RENDER BOOKING OFFICES
+============================================================ */
+
+function renderBookingOffices(offices) {
+  const container = document.getElementById("bookingOfficesContainer");
+
+  if (!container) {
+    return;
+  }
+
+  const enabledOffices = Array.isArray(offices)
+    ? offices.filter((office) => {
+        const enabled = String(office.enabled || "")
+          .trim()
+          .toLowerCase();
+
+        return enabled === "yes" || enabled === "true" || enabled === "1";
+      })
+    : [];
+
+  if (enabledOffices.length === 0) {
+    container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📍</div>
+                <h3>Booking Assistance Available</h3>
+                <p>
+                    Please contact us directly for booking
+                    assistance and enquiries.
+                </p>
+            </div>
+        `;
+
+    return;
+  }
+
+  container.innerHTML = enabledOffices
+    .map((office) => createBookingOfficeCard(office))
+    .join("");
+}
+
+/* ============================================================
+   CREATE BOOKING OFFICE CARD
+============================================================ */
+
+function createBookingOfficeCard(office) {
+  const officeName = escapeHTML(office.office_name || "Booking Office");
+
+  const area = [office.area, office.city, office.state]
+    .filter(Boolean)
+    .map((value) => escapeHTML(value))
+    .join(", ");
+
+  const address = escapeHTML(
+    office.address || "Contact us for the office address.",
+  );
+
+  const contactPerson = escapeHTML(office.contact_person || "");
+
+  const workingHours = escapeHTML(office.working_hours || "");
+
+  const phone = String(office.phone || "").trim();
+
+  const whatsapp = String(office.whatsapp || "").replace(/\D/g, "");
+
+  const mapUrl = String(office.map_url || "").trim();
+
+  const phoneLink = /^[+\d][\d\s()+-]{5,24}$/.test(phone)
+    ? phone.replace(/[^\d+]/g, "")
+    : "";
+
+  const safeMapUrl = (() => {
+    try {
+      const parsed = new URL(mapUrl);
+
+      return parsed.protocol === "https:" &&
+        (parsed.hostname === "maps.google.com" ||
+          parsed.hostname === "www.google.com" ||
+          parsed.hostname === "google.com" ||
+          parsed.hostname === "maps.app.goo.gl")
+        ? parsed.href
+        : "";
+    } catch {
+      return "";
+    }
+  })();
+
+  const actions = [];
+
+  if (phoneLink) {
+    actions.push(`
+            <a href="tel:${escapeHTML(phoneLink)}">
+                ☎ Call
+            </a>
+        `);
+  }
+
+  if (whatsapp.length >= 8 && whatsapp.length <= 15) {
+    const message = encodeURIComponent(
+      `Hello, I would like to enquire about booking at ${office.office_name || "Puri Homestay"}.`,
+    );
+
+    actions.push(`
+            <a
+                href="https://wa.me/${whatsapp}?text=${message}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                WhatsApp
+            </a>
+        `);
+  }
+
+  if (safeMapUrl) {
+    actions.push(`
+            <a
+                href="${escapeHTML(safeMapUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                📍 Directions
+            </a>
+        `);
+  }
+
+  return `
+        <article class="booking-office-card">
+
+            <div class="booking-office-icon" aria-hidden="true">
+                📍
+            </div>
+
+            <h3>${officeName}</h3>
+
+            ${
+              area
+                ? `
+                <p class="booking-office-location">
+                    ${area}
+                </p>
+            `
+                : ""
+            }
+
+            <p class="booking-office-address">
+                ${address}
+            </p>
+
+            ${
+              contactPerson
+                ? `
+                <p class="booking-office-contact">
+                    Contact: ${contactPerson}
+                </p>
+            `
+                : ""
+            }
+
+            ${
+              workingHours
+                ? `
+                <p class="booking-office-hours">
+                    🕒 ${workingHours}
+                </p>
+            `
+                : ""
+            }
+
+            ${
+              actions.length
+                ? `
+                <div class="booking-office-actions">
+                    ${actions.join("")}
+                </div>
+            `
+                : ""
+            }
+
+        </article>
+    `;
+}
+
 // ============================================================
 // VIEW ROOM
 // ============================================================
@@ -880,6 +1067,10 @@ function showInitialLoading() {
 
   const amenitiesContainer = document.getElementById("amenitiesContainer");
 
+  const bookingOfficesContainer = document.getElementById(
+    "bookingOfficesContainer",
+  );
+
   if (roomsContainer) {
     roomsContainer.innerHTML = `
 
@@ -910,6 +1101,14 @@ function showInitialLoading() {
             </div>
 
         `;
+  }
+  if (bookingOfficesContainer) {
+    bookingOfficesContainer.innerHTML = `
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading booking offices...</p>
+        </div>
+    `;
   }
 }
 

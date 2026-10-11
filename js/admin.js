@@ -497,13 +497,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (module === "rooms") {
       renderRoomsForm();
-
       renderRoomsTable();
 
       await Promise.all([loadRoomsForCrud(), loadNextRoomId()]);
+    } else if (module === "offices") {
+      renderBookingOfficesForm();
+      renderBookingOfficesTable();
+
+      await loadBookingOfficesForCrud();
     } else {
       renderCrudFormPlaceholder(config);
-
       renderCrudTablePlaceholder(config);
     }
 
@@ -1034,6 +1037,516 @@ document.addEventListener("DOMContentLoaded", () => {
       if (submitButton) {
         submitButton.disabled = !roomIdInput.value.trim();
       }
+    }
+  }
+
+  /* =========================================================
+   BOOKING OFFICES — FRONTEND CRUD
+   ========================================================= */
+
+  let adminBookingOfficesData = [];
+  let officeEditMode = false;
+  let editingOfficeId = "";
+
+  /* ---------- FORM ---------- */
+
+  function renderBookingOfficesForm() {
+    crudFormContainer.innerHTML = `
+    <form id="bookingOfficeCrudForm" class="admin-crud-form">
+      <div class="admin-form-grid">
+
+        <div class="admin-form-field">
+          <label for="bo_office_id">Office ID *</label>
+          <input id="bo_office_id" name="office_id"
+            required maxlength="50"
+            placeholder="BO001">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_office_name">Office Name *</label>
+          <input id="bo_office_name" name="office_name"
+            required maxlength="150">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_address">Address *</label>
+          <input id="bo_address" name="address"
+            required maxlength="500">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_area">Area</label>
+          <input id="bo_area" name="area" maxlength="150">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_city">City *</label>
+          <input id="bo_city" name="city"
+            required maxlength="100">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_state">State</label>
+          <input id="bo_state" name="state" maxlength="100">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_pincode">Pincode</label>
+          <input id="bo_pincode" name="pincode"
+            inputmode="numeric" maxlength="12">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_contact_person">Contact Person</label>
+          <input id="bo_contact_person" name="contact_person"
+            maxlength="150">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_phone">Phone *</label>
+          <input id="bo_phone" name="phone"
+            required maxlength="30" inputmode="tel">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_whatsapp">WhatsApp</label>
+          <input id="bo_whatsapp" name="whatsapp"
+            maxlength="30" inputmode="tel">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_email">Email</label>
+          <input id="bo_email" name="email"
+            type="email" maxlength="254">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_working_hours">Working Hours</label>
+          <input id="bo_working_hours" name="working_hours"
+            maxlength="100" placeholder="9 AM - 6 PM">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_map_url">Map URL</label>
+          <input id="bo_map_url" name="map_url"
+            type="url" maxlength="1000"
+            placeholder="https://maps.google.com/...">
+        </div>
+
+        <div class="admin-form-field">
+          <label for="bo_enabled">Enabled</label>
+          <select id="bo_enabled" name="enabled">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="admin-form-actions">
+        <button type="submit" class="admin-button admin-button-primary"
+          id="bookingOfficeSubmitButton">
+          Add Booking Office
+        </button>
+
+        <button type="button" class="admin-button"
+          id="bookingOfficeCancelButton">
+          Clear Form
+        </button>
+      </div>
+    </form>
+  `;
+
+    const form = document.getElementById("bookingOfficeCrudForm");
+
+    form.addEventListener("submit", submitBookingOfficeForm);
+
+    document
+      .getElementById("bookingOfficeCancelButton")
+      .addEventListener("click", resetBookingOfficeForm);
+  }
+
+  /* ---------- LOAD ---------- */
+
+  async function loadBookingOfficesForCrud() {
+    if (!adminToken) return;
+
+    crudTableWrapper.innerHTML =
+      '<div class="admin-crud-loading">Loading booking offices...</div>';
+
+    try {
+      const url =
+        `${CONFIG.apiUrl}?action=getBookingOffices` +
+        `&token=${encodeURIComponent(adminToken)}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        const error = new Error(
+          result.error || "Failed to load booking offices.",
+        );
+        error.code = result.code;
+        throw error;
+      }
+
+      adminBookingOfficesData = Array.isArray(result.data) ? result.data : [];
+
+      renderBookingOfficesTable();
+    } catch (error) {
+      console.error("Load booking offices failed:", error);
+
+      if (isSessionError(error)) {
+        clearAdminSession();
+        closeCrudModal();
+        showLoginPanel();
+        return;
+      }
+
+      crudTableWrapper.innerHTML = `<div class="admin-crud-error">${escapeHtml(
+        error.message || "Unable to load booking offices.",
+      )}</div>`;
+    }
+  }
+
+  /* ---------- TABLE ---------- */
+
+  function renderBookingOfficesTable(offices = adminBookingOfficesData) {
+    if (!Array.isArray(offices) || offices.length === 0) {
+      crudTableWrapper.innerHTML = `
+      <div class="admin-crud-empty">
+        <strong>No booking offices found</strong>
+        <p>Add your first booking office using the form above.</p>
+      </div>`;
+
+      crudRecordCount.textContent = "0 records";
+      return;
+    }
+
+    crudRecordCount.textContent = `${offices.length} record${offices.length === 1 ? "" : "s"}`;
+
+    crudTableWrapper.innerHTML = `
+    <table class="admin-crud-table">
+      <thead>
+        <tr>
+          <th>Office ID</th>
+          <th>Office Name</th>
+          <th>City</th>
+          <th>Contact Person</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Enabled</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${offices
+          .map((office) => {
+            const id = String(office.office_id || "");
+            const enabled = String(office.enabled || "Yes");
+
+            return `
+            <tr>
+              <td>${escapeHtml(id)}</td>
+              <td>${escapeHtml(office.office_name || "")}</td>
+              <td>${escapeHtml(office.city || "")}</td>
+              <td>${escapeHtml(office.contact_person || "")}</td>
+              <td>${escapeHtml(office.phone || "")}</td>
+              <td>${escapeHtml(office.email || "")}</td>
+              <td>${escapeHtml(enabled)}</td>
+              <td>
+                <button type="button"
+                  class="admin-button"
+                  data-office-crud-action="edit"
+                  data-office-id="${escapeHtml(id)}">
+                  Edit
+                </button>
+                <button type="button"
+                  class="admin-button"
+                  data-office-crud-action="delete"
+                  data-office-id="${escapeHtml(id)}">
+                  Delete
+                </button>
+              </td>
+            </tr>`;
+          })
+          .join("")}
+      </tbody>
+    </table>`;
+  }
+
+  /* ---------- FORM VALUES ---------- */
+
+  function getBookingOfficeFormData() {
+    const fieldNames = [
+      "office_id",
+      "office_name",
+      "address",
+      "area",
+      "city",
+      "state",
+      "pincode",
+      "contact_person",
+      "phone",
+      "whatsapp",
+      "email",
+      "working_hours",
+      "map_url",
+      "enabled",
+    ];
+
+    const office = {};
+
+    fieldNames.forEach((name) => {
+      const field = document.getElementById(`bo_${name}`);
+      office[name] = field ? field.value.trim() : "";
+    });
+
+    return office;
+  }
+
+  function validateBookingOffice(office) {
+    const required = [
+      ["office_id", "Office ID"],
+      ["office_name", "Office Name"],
+      ["address", "Address"],
+      ["city", "City"],
+      ["phone", "Phone"],
+    ];
+
+    for (const [key, label] of required) {
+      if (!office[key]) return `${label} is required.`;
+    }
+
+    if (office.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(office.email)) {
+      return "Enter a valid email address.";
+    }
+
+    if (office.map_url) {
+      try {
+        const parsed = new URL(office.map_url);
+        if (!["http:", "https:"].includes(parsed.protocol)) {
+          return "Map URL must use HTTP or HTTPS.";
+        }
+      } catch (_) {
+        return "Enter a valid map URL.";
+      }
+    }
+
+    if (!["Yes", "No"].includes(office.enabled)) {
+      return "Enabled must be Yes or No.";
+    }
+
+    return "";
+  }
+
+  /* ---------- ADD / UPDATE ---------- */
+
+  async function submitBookingOfficeForm(event) {
+    event.preventDefault();
+
+    const office = getBookingOfficeFormData();
+    const validationError = validateBookingOffice(office);
+
+    if (validationError) {
+      showCrudFormMessage(validationError, "error");
+      return;
+    }
+
+    const submitButton = document.getElementById("bookingOfficeSubmitButton");
+
+    submitButton.disabled = true;
+
+    try {
+      const action = officeEditMode
+        ? "updateBookingOffice"
+        : "addBookingOffice";
+
+      const payload = new URLSearchParams();
+
+      payload.set("action", action);
+      payload.set("token", adminToken);
+      payload.set("office", JSON.stringify(office));
+
+      const response = await fetch(CONFIG.apiUrl, {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        const error = new Error(
+          result.error || "Unable to save booking office.",
+        );
+        error.code = result.code;
+        throw error;
+      }
+
+      showCrudFormMessage(
+        result.message || "Booking office saved successfully.",
+        "success",
+      );
+
+      await loadBookingOfficesForCrud();
+
+      resetBookingOfficeForm();
+
+      showCrudFormMessage(
+        result.message || "Booking office saved successfully.",
+        "success",
+      );
+    } catch (error) {
+      console.error("Save booking office failed:", error);
+
+      if (isSessionError(error)) {
+        clearAdminSession();
+        closeCrudModal();
+        showLoginPanel();
+        return;
+      }
+
+      showCrudFormMessage(
+        error.message || "Unable to save booking office.",
+        "error",
+      );
+    } finally {
+      submitButton.disabled = false;
+    }
+  }
+
+  /* ---------- EDIT ---------- */
+
+  function editBookingOffice(officeId) {
+    const office = adminBookingOfficesData.find(
+      (item) =>
+        String(item.office_id || "").trim() === String(officeId || "").trim(),
+    );
+
+    if (!office) {
+      showCrudFormMessage("Booking office not found.", "error");
+      return;
+    }
+
+    Object.keys(office).forEach((key) => {
+      const field = document.getElementById(`bo_${key}`);
+
+      if (field) {
+        field.value = office[key] == null ? "" : String(office[key]);
+      }
+    });
+
+    officeEditMode = true;
+    editingOfficeId = String(office.office_id || "").trim();
+
+    const idInput = document.getElementById("bo_office_id");
+    idInput.readOnly = true;
+
+    document.getElementById("bookingOfficeSubmitButton").textContent =
+      "Update Booking Office";
+
+    crudFormTitle.textContent = "Edit Booking Office";
+
+    showCrudFormMessage(`Editing ${editingOfficeId}`, "info");
+  }
+
+  /* ---------- RESET ---------- */
+
+  function resetBookingOfficeForm() {
+    const form = document.getElementById("bookingOfficeCrudForm");
+
+    if (form) form.reset();
+
+    officeEditMode = false;
+    editingOfficeId = "";
+
+    const idInput = document.getElementById("bo_office_id");
+    if (idInput) idInput.readOnly = false;
+
+    const button = document.getElementById("bookingOfficeSubmitButton");
+    if (button) button.textContent = "Add Booking Office";
+
+    crudFormTitle.textContent = "Add New Booking Office";
+    clearCrudFormMessage();
+  }
+
+  /* ---------- DELETE ---------- */
+
+  async function deleteBookingOffice(officeId) {
+    const office = adminBookingOfficesData.find(
+      (item) =>
+        String(item.office_id || "").trim() === String(officeId || "").trim(),
+    );
+
+    if (!office) {
+      showCrudFormMessage("Booking office not found.", "error");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Delete booking office "${office.office_name}" (${office.office_id})?`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const payload = new URLSearchParams();
+
+      payload.set("action", "deleteBookingOffice");
+      payload.set("token", adminToken);
+      payload.set("office_id", String(office.office_id));
+
+      const response = await fetch(CONFIG.apiUrl, {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        const error = new Error(
+          result.error || "Unable to delete booking office.",
+        );
+        error.code = result.code;
+        throw error;
+      }
+
+      resetBookingOfficeForm();
+      await loadBookingOfficesForCrud();
+
+      showCrudFormMessage(
+        result.message || "Booking office deleted successfully.",
+        "success",
+      );
+    } catch (error) {
+      console.error("Delete booking office failed:", error);
+
+      if (isSessionError(error)) {
+        clearAdminSession();
+        closeCrudModal();
+        showLoginPanel();
+        return;
+      }
+
+      showCrudFormMessage(
+        error.message || "Unable to delete booking office.",
+        "error",
+      );
     }
   }
 
@@ -1694,6 +2207,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================================
 
   crudTableWrapper.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-office-crud-action]");
+
+    if (!button) return;
+
+    const action = button.dataset.officeCrudAction;
+    const officeId = button.dataset.officeId || "";
+
+    if (action === "edit") {
+      editBookingOffice(officeId);
+    } else if (action === "delete") {
+      await deleteBookingOffice(officeId);
+    }
+  });
+
+  crudTableWrapper.addEventListener("click", async (event) => {
     const button = event.target.closest("button[data-room-crud-action]");
 
     if (!button) {
@@ -1830,6 +2358,32 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       renderRoomsTable(filteredRooms);
+    } else if (activeCrudModule === "offices") {
+      const query = crudSearch.value.trim().toLowerCase();
+
+      const filtered = adminBookingOfficesData.filter((office) =>
+        [
+          office.office_id,
+          office.office_name,
+          office.address,
+          office.area,
+          office.city,
+          office.state,
+          office.pincode,
+          office.contact_person,
+          office.phone,
+          office.whatsapp,
+          office.email,
+          office.working_hours,
+          office.enabled,
+        ].some((value) =>
+          String(value || "")
+            .toLowerCase()
+            .includes(query),
+        ),
+      );
+
+      renderBookingOfficesTable(filtered);
     }
   });
 
