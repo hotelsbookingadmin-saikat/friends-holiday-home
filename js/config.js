@@ -15,5 +15,7 @@ const CONFIG = {
     homestay: "Homestay",
     amenities: "Amenities",
     bookingOffices: "BookingOffices",
+
+    gallery: "Gallery",
   },
 };

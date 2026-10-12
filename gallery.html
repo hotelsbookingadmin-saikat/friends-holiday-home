@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Explore photos of Puri Homestay, including rooms, amenities and property views."
+    />
+    <title>Gallery | Puri Homestay</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .gallery-page {
+        padding: 50px 0 70px;
+      }
+      .gallery-page-heading {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .gallery-page-heading h1 {
+        margin-bottom: 10px;
+      }
+      .gallery-filters {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin: 25px 0 32px;
+      }
+      .gallery-filter {
+        border: 1px solid #ddd;
+        border-radius: 30px;
+        padding: 9px 18px;
+        background: white;
+        cursor: pointer;
+      }
+      .gallery-filter.active {
+        background: #754c32;
+        color: white;
+      }
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+      }
+      .gallery-card {
+        overflow: hidden;
+        border-radius: 12px;
+        background: white;
+      }
+      .gallery-card img {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        display: block;
+        cursor: zoom-in;
+        transition: transform 0.25s;
+      }
+      .gallery-card img:hover {
+        transform: scale(1.03);
+      }
+      .gallery-caption {
+        padding: 12px 14px;
+      }
+      .gallery-caption h3 {
+        margin: 0 0 5px;
+      }
+      .gallery-caption p {
+        margin: 0;
+        color: #777;
+        font-size: 0.9rem;
+      }
+      .gallery-status {
+        text-align: center;
+        padding: 30px 0;
+      }
+      .gallery-lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(0, 0, 0, 0.92);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 20px;
+      }
+      .gallery-lightbox.open {
+        display: flex;
+      }
+      .gallery-lightbox img {
+        max-width: 95%;
+        max-height: 80vh;
+        object-fit: contain;
+      }
+      .gallery-lightbox button {
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        color: white;
+        background: transparent;
+        border: 0;
+        font-size: 38px;
+        cursor: pointer;
+      }
+      .gallery-lightbox p {
+        color: white;
+      }
+      @media (max-width: 750px) {
+        .gallery-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 480px) {
+        .gallery-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="index.html" class="brand">
+          <span class="brand-icon">🏡</span>
+          <span id="headerPropertyName" class="brand-name">Puri Homestay</span>
+        </a>
+        <nav class="main-nav">
+          <a href="index.html#home">Home</a>
+          <a href="index.html#rooms">Rooms</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="index.html#amenities">Amenities</a>
+          <a href="index.html#location">Location</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="gallery-page">
+      <div class="container">
+        <div class="gallery-page-heading">
+          <span class="section-kicker">A GLIMPSE OF OUR HOMESTAY</span>
+          <h1>Our Gallery</h1>
+          <p>Explore our rooms, facilities and property.</p>
+        </div>
+
+        <div id="galleryFilters" class="gallery-filters"></div>
+        <div id="galleryStatus" class="gallery-status">Loading photos...</div>
+        <div id="galleryContainer" class="gallery-grid"></div>
+      </div>
+    </main>
+
+    <div
+      id="galleryLightbox"
+      class="gallery-lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Image viewer"
+    >
+      <button type="button" id="galleryClose" aria-label="Close image">
+        &times;
+      </button>
+      <img id="galleryLargeImage" alt="" />
+      <p id="galleryLargeTitle"></p>
+    </div>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© <span id="currentYear"></span> Puri Homestay</p>
+        <div class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="index.html#rooms">Rooms</a>
+          <a href="gallery.html">Gallery</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/sheets.js"></script>
+    <script src="js/gallery.js"></script>
+  </body>
+</html>
